@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="uft-8">
+		<title>Game of Life</title>
+	</head>
+
+	<body>
+		<form id="setup_cell">
+			<button type="button" id="start">Start</button>
+			<button type="button" id="stop">Stop</button>
+		</form>
+		<script src="js/board.js"></script>
+		<script>
+			var checkboxCell = [];
+			function generateCheckbox(row, column) {
+				var i,j;
+				var formSetup = document.querySelector("#setup_cell");
+				for (i = 0; i < row; i++) {
+					var checkboxRow = document.createElement("p");
+					formSetup.appendChild(checkboxRow);
+					checkboxCell[i] = [];
+					for (j = 0; j < column; j++) {
+						var checkboxInput = document.createElement("input");
+						checkboxInput.setAttribute("type","checkbox");
+						checkboxInput.checked = false;
+						checkboxRow.appendChild(checkboxInput);
+						checkboxCell[i][j] = checkboxInput;
+					}
+				}
+			}
+
+			function readCheckboxToGridCell() {
+				var gridCell = [];
+				var rowLength = checkboxCell.length;
+				var columnLength = checkboxCell[0].length;
+				var i,j;
+
+				for (i = 0; i < rowLength; i++) {
+					gridCell[i] = [];
+					for (j = 0; j < columnLength; j++) {
+						gridCell[i][j] = checkboxCell[i][j].checked;
+					}
+				}
+				return gridCell;
+			}
+
+			function renderGridCellToCheckbox(gridCell) {
+				var rowLength = checkboxCell.length;
+				var columnLength = checkboxCell[0].length;
+				var i,j;
+
+				for (i = 0; i < rowLength; i++) {
+					for (j = 0; j < columnLength; j++) {
+						checkboxCell[i][j].checked = gridCell[i][j]; 
+					}
+				}
+			}
+
+			generateCheckbox(6,6);
+
+
+			var renderInterval;
+			var board;
+			document.querySelector("#start").addEventListener("click", function() {
+				var gridCell = readCheckboxToGridCell();
+				board = new Board(gridCell);
+
+				renderInterval = setInterval(function() {
+					board.toNextGeneration();
+					var grid = board.getCellGrid();
+					renderGridCellToCheckbox(grid);
+				}, 1000);
+
+			});
+
+			document.querySelector("#stop").addEventListener("click", function() {
+				clearInterval(renderInterval);
+			});
+		</script>
+	</body>
+</html>
